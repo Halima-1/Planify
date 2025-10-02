@@ -1,0 +1,90 @@
+form {
+
+    width: 95%;
+
+    textarea {
+        width: 90%;
+        // height: ;
+        // padding: 10%;
+    }
+
+    .event-time {
+        width: 90%;
+        border: 1px solid rgb(206, 205, 205);
+        padding: 0 10px;
+        margin: 15px 0;
+        border-radius: 10px;
+        padding-bottom: 5px;
+
+        div {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            // border-bottom: 1px solid gray;
+            // padding: 0 10px;
+            // margin: 15px 0;
+
+            label {
+                margin-top: 20px;
+                text-decoration: solid;
+                // width: 25%;
+            }
+
+            input[type="time"],
+            input[type="date"] {
+                // appearance: none;/
+                padding: 7px;
+                width: 30%;
+                cursor: pointer;
+                // z-index: 20;
+                background-color: rgba(0, 0, 0, 0.09);
+                color: black;
+                // marker: none;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.3);
+                }
+            }
+
+        }
+    }
+
+    #location {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 95%;
+
+        select {
+            width: 45%;
+            border: 1px solid gray;
+            border-radius: 10px;
+            padding: 4px 0;
+            outline: none;
+            margin-top: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    }
+
+    .address {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 95%;
+
+        label {
+            margin-top: 15px;
+        }
+
+        input {
+            width: 70%;
+            border: 1px solid gray;
+            border-radius: 10px;
+            padding: 4px;
+            outline: none;
+            margin-top: 10px;
+        }
+    }
+}

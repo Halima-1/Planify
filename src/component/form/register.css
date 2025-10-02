@@ -1,0 +1,66 @@
+form {
+    width: 350px !important;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 10px;
+    margin: auto;
+    align-items: center;
+}
+
+.spinner {
+    margin: 20px auto;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+input {
+    margin: 10px 0;
+    border: none;
+    padding: 10px;
+    outline: none;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.submit-btn {
+    background-color: navy;
+    color: white;
+    width: 40%;
+}
+
+.google {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    background-color: rgb(30, 101, 206);
+    color: white;
+    border: none;
+    padding: 7px 0;
+    padding-left: 6px;
+
+}
+
+.google img {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+}
+
+.google b {
+    margin: 0;
+}
