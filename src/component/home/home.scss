@@ -1,6 +1,7 @@
 form {
 
     width: 95%;
+    background-color: white;
 
     textarea {
         width: 90%;
@@ -28,7 +29,7 @@ form {
             label {
                 margin-top: 20px;
                 text-decoration: solid;
-                // width: 25%;
+                width: 25%;
             }
 
             input[type="time"],
@@ -37,7 +38,7 @@ form {
                 padding: 7px;
                 width: 30%;
                 cursor: pointer;
-                // z-index: 20;
+                z-index: 20;
                 background-color: rgba(0, 0, 0, 0.09);
                 color: black;
                 // marker: none;
@@ -88,3 +89,5 @@ form {
         }
     }
 }
+
+.container {}

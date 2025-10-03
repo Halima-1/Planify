@@ -3,9 +3,10 @@ import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
 import { db } from '../config/firebase';
 import { getNames } from "country-list";
-
-
-function CreateEvent() {
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+function CreateEvent({eventButton, toggleEventBtn}) {
     const countries = getNames();
     const [errData, setErrData] = useState({});
     const nigeriaStates = [
@@ -15,6 +16,7 @@ function CreateEvent() {
         "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo",
         "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
       ];
+      
     const [eventList, setEventList] = useState({
         eventTitle: "",
         startTime: "10:12",
@@ -38,9 +40,11 @@ function CreateEvent() {
                 const newErr ={}
         // newErr.new =""
         if(eventList.eventTitle ==""){
+          toast.error("Kindly input your event's title 🎉");
             newErr.title ="Kindly input your event's title"
         }
         else if(eventList.address ==""){
+          toast.error("Kindly input your event's address");
             newErr.address ="Kindly input your event's address"
         }
         else if(eventList.startDate ==""){
@@ -58,7 +62,6 @@ function CreateEvent() {
         else if(eventList.eventCountry ==""){
             newErr.eventCountry ="Kindly input your event's country"
         }
-       
         else{
             const auth = getAuth();
             const user = auth.currentUser;
@@ -67,32 +70,21 @@ function CreateEvent() {
               return;
             }
             try {
-              const eventRef = collection(db, "users", user.uid, "events");
+              const eventRef = collection(db, "events");
                 await addDoc(eventRef, {
                   ...eventList,
                   createdAt: new Date(),
+                  userId: user.uid,
                 });
+                toast.success("Login successful! 🎉");
+                window.location.href="/"
                 console.log(`Added ${eventList.eventTitle} to events`);
         } catch (error) {
-        }
+        }        console.log(user)
         }
         setErrData(newErr)
-        console.log(eventList.address)
-        console.log(eventList.eventCountry)
-        console.log(eventList.eventState)
-        console.log(eventList.startDate)
-        console.log(eventList.startTime)
-
       }
-    //   const  handleAddToEvent = (e)=>{
-    //     e.preventDefault()
-    //     validation()
-    //     if(!errData){
-    //         console.log(errData.length)
-    //         return
-    //     }
-        
-    //   };
+
     return (
         <>
         <form
@@ -101,9 +93,10 @@ function CreateEvent() {
           event.preventDefault();
           handleAddToEvent();
         }}
+        style={eventButton? {display:"block"} :{display:"none"}}
       >
         <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
-        {errData.notify && <p style={{ color: "red" }}>{errData.notify}</p>}
+        <ToastContainer position="top-center" autoClose={3000} />
 
         {errData.title && <p style={{ color: "red" }}>{errData.title}</p>}
 <textarea
@@ -173,7 +166,8 @@ function CreateEvent() {
         onChange={handleChange} 
         placeholder="Event's address"/>
        </div>
-        <input className="submit-btn" type="submit" 
+        <input style={!eventButton? {display:"none"}:{display:"block"}}
+         className="submit-btn" type="submit" 
         onClick={handleAddToEvent} value={"Create event"} />
       </form>
         </>
