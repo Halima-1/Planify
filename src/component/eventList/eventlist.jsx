@@ -3,13 +3,15 @@ import "./eventlist.scss"
 import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getAuth, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import {BiPlus, BiTime, BiTrash} from "react-icons/bi"
+import {BiPen, BiPlus, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
+import { countries } from "../createEvent";
+import { nigeriaStates } from "../createEvent";
 
 
 const Eventlist =({eventButton,toggleEventBtn}) =>{
   
-    const [eventlist,setEventList] =useState([])
+    const [eventlist,setEventlist] =useState([])
     const [loading, setLoading] = useState(true);
     const [upcomingEvent, setUpcomingEvent] =useState([])
     const [pastEvent, setPastEvent] =useState([])
@@ -47,7 +49,7 @@ const isPastEvent = (eventDate) => {
               id: doc.id,
               ...doc.data()
             }));
-            setEventList(eventsData);
+            setEventlist(eventsData);
 
              // filter upcoming
         const upcoming = eventsData.filter((ev) =>
@@ -177,6 +179,32 @@ const removeItem = async (itemId) => {
   console.log(itemId)
 
 };
+
+// editttgg
+const [eventList, setEventList] = useState({
+  eventTitle: "",
+  startTime: "10:12",
+  startDate:"2025-01-01",
+  endTime: "10:10",
+  endDate:"2025-01-01",
+  guest:"",
+  eventCountry:"",
+  eventState:"",
+  address:"",
+  entry:"",
+  policy:""
+});
+
+const handleChange = (e) => {
+  const value = e.target.value;
+  setEventList({ ...eventList, [e.target.name]: value });
+};
+const [editEvent, setEditEvent] =useState(false)
+const [openEventMenu, setOpenEventMenu] =useState(false)
+const edit =(itemId)=>{
+  setEditEvent(true)
+  console.log(itemId)
+}
     return(
         <>
         <div className="event-container" 
@@ -197,9 +225,10 @@ const removeItem = async (itemId) => {
               style={!displayBtn? {color:"black"} : {color:"rgb(187, 185, 185)"}}
             >Upcoming</h2>
           </div>
+          
           {loading? <div className="spinner"></div>:
           <>
-                    {displayBtn? today.map((eventlist,index) =>(
+                    {displayBtn? today.map((eventlist,index) =>(<>
             <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
@@ -212,31 +241,224 @@ const removeItem = async (itemId) => {
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
               <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
             </div>
-            <BiTrash 
+           <div className="edit-icons"
             style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
-            onClick={() => removeItem(eventlist.id)}/>
-            <div>
+           >
+           <BiTrash 
+            style={!openEventMenu? {display:"none"}:{display:"block"}}
+              onClick={() => removeItem(eventlist.id)}
+            />
+            <BiPen
+              style={!openEventMenu? {display:"none"}:{display:"block"}}
+            onClick={() =>edit(eventlist.id)}/>
+           </div>
+            <div onClick={() =>setOpenEventMenu(true)}
+            style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
+            >
+              <b>.</b>
+              <b>.</b>
+              <b>.</b>
             </div>
           </div>
+
+          <form
+        action=""
+        style={!editEvent? {display:"none"}:{display:"block"}}
+        onSubmit={(event) => {
+          event.preventDefault();
+          // handleAddToEvent();
+        }}
+        // style={eventButton? {display:"block"} :{display:"none"}}
+      >
+        <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
+        {/* <ToastContainer position="top-center" autoClose={3000} /> */}
+
+        {/* {errData.title && <p style={{ color: "red" }}>{errData.title}</p>} */}
+<textarea
+        value={eventlist.eventTitle}
+        onChange={handleChange}
+        placeholder="Create event"
+        rows="5"
+        cols="30"
+        name='eventTitle'
+      />
+        {/* {errData.startDate && <p style={{ color: "red" }}>{errData.startDate}</p>} */}
+        {/* {errData.endDate && <p style={{ color: "red" }}>{errData.endDate}</p>} */}
+       {/* {errData.startTime && <p style={{ color: "red" }}>{errData.startTime}</p>} */}
+       <div className='event-time'>
+       <div style={{borderBottom:" 1px solid rgb(206, 205, 205)"}}>
+        {/* <input type='' name="" id="" /> */}
+        <label htmlFor="startDate"><b>Starts:</b>
+         </label>
+         <input type="date" name="startDate"
+         value={eventlist.startDate} required
+         onChange={handleChange}
+         id="eventDate" placeholder={"date"}/>
+        <input type="time" name="startTime" 
+        id="" value={eventlist.startTime} required
+        onChange={handleChange}
+        />
+        </div>
+        {/* {errData.endTime && <p style={{ color: "red" }}>{errData.endTime}</p>} */}
+
+       <div >
+         <label htmlFor="endDate"><b>End:</b>
+         </label>
+         <input type="date" name="endDate"
+         value={eventlist.endDate} required
+         onChange={handleChange}
+         id="eventDate" placeholder={"date"}/>
+         <input type="time" name="endTime"
+         id="" value={eventlist.endTime} required
+         onChange={handleChange}/>
+       </div>
+       </div>
+               {/* {errData.eventCountry && <p style={{ color: "red" }}>{errData.eventCountry}</p>} */}
+       <div id='location'>
+       <select value={eventlist.eventCountry} name='eventCountry' onChange={handleChange}>
+      <option value="" name='eventCountry'>-- Select Country --</option>
+      {countries.map((eventCountry, index) => (
+        <option key={index} value={eventCountry}>
+          {eventCountry}
+        </option>
+      ))}
+    </select>
+    <select value={eventlist.eventState} name='eventState' onChange={handleChange}>
+      <option value="">-- Select State --</option>
+      {nigeriaStates.map((eventState, index) => (
+        <option key={index} value={eventState}>
+          {eventState}
+        </option>
+      ))}
+    </select>
+       </div>
+               {/* {errData.address && <p style={{ color: "red" }}>{errData.address}</p>} */}
+       <div className="address">
+       <label htmlFor="address">Address:</label>
+       <input type="text" id="address" name='address' 
+       value={eventlist.
+       address}
+        onChange={handleChange} 
+        placeholder="Event's address"/>
+       </div>
+      </form>
+          </>
 )) : upcomingEvent.map((eventlist,index) =>(
-  <div className="event today" key={index}>
-  <div className="date">
-    <span className="month">{formatMonth(eventlist.startDate)}</span>
-    <b>{formatDate(eventlist.startDate)}</b>
-    <span>{formatDay(eventlist.startDate)}</span>
-  </div>
-  <div className="details">
-    <b>{(eventlist.eventTitle)}</b>
-    <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
-     <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
-    <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
-  </div>
-  <BiTrash 
+  <>
+            <div className="event today" key={index}>
+            <div className="date">
+              <span className="month">{formatMonth(eventlist.startDate)}</span>
+              <b>{formatDate(eventlist.startDate)}</b>
+              <span>{formatDay(eventlist.startDate)}</span>
+            </div>
+            <div className="details">
+              <b>{(eventlist.eventTitle)}</b>
+              <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
+               <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
+              <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
+            </div>
+           <div className="edit-icons"
             style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
-            onClick={() => removeItem(eventlist.id)}/>
-  <div>
-  </div>
-</div>
+           >
+           <BiTrash 
+            style={!openEventMenu? {display:"none"}:{display:"block"}}
+              onClick={() => removeItem(eventlist.id)}
+            />
+            <BiPen
+              style={!openEventMenu? {display:"none"}:{display:"block"}}
+            onClick={() =>edit(eventlist.id)}/>
+           </div>
+            <div onClick={() =>setOpenEventMenu(true)}
+            style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
+            >
+              <b>.</b>
+              <b>.</b>
+              <b>.</b>
+            </div>
+          </div>
+
+          <form
+        action=""
+        style={!editEvent? {display:"none"}:{display:"block"}}
+        onSubmit={(event) => {
+          event.preventDefault();
+          // handleAddToEvent();
+        }}
+        // style={eventButton? {display:"block"} :{display:"none"}}
+      >
+        <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
+        {/* <ToastContainer position="top-center" autoClose={3000} /> */}
+
+        {/* {errData.title && <p style={{ color: "red" }}>{errData.title}</p>} */}
+<textarea
+        value={eventlist.eventTitle}
+        onChange={handleChange}
+        placeholder="Create event"
+        rows="5"
+        cols="30"
+        name='eventTitle'
+      />
+        {/* {errData.startDate && <p style={{ color: "red" }}>{errData.startDate}</p>} */}
+        {/* {errData.endDate && <p style={{ color: "red" }}>{errData.endDate}</p>} */}
+       {/* {errData.startTime && <p style={{ color: "red" }}>{errData.startTime}</p>} */}
+       <div className='event-time'>
+       <div style={{borderBottom:" 1px solid rgb(206, 205, 205)"}}>
+        {/* <input type='' name="" id="" /> */}
+        <label htmlFor="startDate"><b>Starts:</b>
+         </label>
+         <input type="date" name="startDate"
+         value={eventlist.startDate} required
+         onChange={handleChange}
+         id="eventDate" placeholder={"date"}/>
+        <input type="time" name="startTime" 
+        id="" value={eventlist.startTime} required
+        onChange={handleChange}
+        />
+        </div>
+        {/* {errData.endTime && <p style={{ color: "red" }}>{errData.endTime}</p>} */}
+
+       <div >
+         <label htmlFor="endDate"><b>End:</b>
+         </label>
+         <input type="date" name="endDate"
+         value={eventlist.endDate} required
+         onChange={handleChange}
+         id="eventDate" placeholder={"date"}/>
+         <input type="time" name="endTime"
+         id="" value={eventlist.endTime} required
+         onChange={handleChange}/>
+       </div>
+       </div>
+               {/* {errData.eventCountry && <p style={{ color: "red" }}>{errData.eventCountry}</p>} */}
+       <div id='location'>
+       <select value={eventlist.eventCountry} name='eventCountry' onChange={handleChange}>
+      <option value="" name='eventCountry'>-- Select Country --</option>
+      {countries.map((eventCountry, index) => (
+        <option key={index} value={eventCountry}>
+          {eventCountry}
+        </option>
+      ))}
+    </select>
+    <select value={eventlist.eventState} name='eventState' onChange={handleChange}>
+      <option value="">-- Select State --</option>
+      {nigeriaStates.map((eventState, index) => (
+        <option key={index} value={eventState}>
+          {eventState}
+        </option>
+      ))}
+    </select>
+       </div>
+               {/* {errData.address && <p style={{ color: "red" }}>{errData.address}</p>} */}
+       <div className="address">
+       <label htmlFor="address">Address:</label>
+       <input type="text" id="address" name='address' 
+       value={eventlist.
+       address}
+        onChange={handleChange} 
+        placeholder="Event's address"/>
+       </div>
+      </form>
+          </>
 ))}
           </>
           }
