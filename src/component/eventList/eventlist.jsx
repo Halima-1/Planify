@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import "./eventlist.scss"
-import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getAuth, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import {BiPen, BiPlus, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
 import { countries } from "../createEvent";
 import { nigeriaStates } from "../createEvent";
+import { useNavigate } from "react-router-dom";
 
 
 const Eventlist =({eventButton,toggleEventBtn}) =>{
@@ -15,6 +16,7 @@ const Eventlist =({eventButton,toggleEventBtn}) =>{
     const [loading, setLoading] = useState(true);
     const [upcomingEvent, setUpcomingEvent] =useState([])
     const [pastEvent, setPastEvent] =useState([])
+    const navigate = useNavigate()
 
     // const [user, setUser] = useState(null);
     const auth = getAuth();
@@ -66,7 +68,10 @@ setPastEvent(past)
 console.log(eventsData)
 console.log("UPCOMING:", upcoming);
 console.log("PAST:", past);
+console.log("today:", past);
 setLoading(false)
+updatedd
+setEventlist(eventsData);
 
           } catch (error) {
             console.error("Error fetching events: ", error);
@@ -160,9 +165,7 @@ const formatYear = (dateVal) => {
 
 const date =new Date()
 // console.log(format(date))
-const today = eventlist.filter((item) => format(item.startDate) == format(date) )
 
-console.log(today)
 const [displayBtn, setDisplayBtn] =useState(true)
 const toggleDisplay =()=>{
   setDisplayBtn(!displayBtn)
@@ -181,8 +184,8 @@ const removeItem = async (itemId) => {
 };
 
 // editttgg
-const [eventList, setEventList] = useState({
-  eventTitle: "",
+const [updatedd, setUpdatedDataa] = useState({
+  eventTitle: eventlist.eventTitle,
   startTime: "10:12",
   startDate:"2025-01-01",
   endTime: "10:10",
@@ -194,29 +197,51 @@ const [eventList, setEventList] = useState({
   entry:"",
   policy:""
 });
-
+// const [updatedData, setUpdatedData] =useState({})
 const handleChange = (e) => {
   const value = e.target.value;
-  setEventList({ ...eventList, [e.target.name]: value });
+  setUpdatedDataa({ ...updatedd, [e.target.name]: value });
 };
 const [editEvent, setEditEvent] =useState(false)
 const [openEventMenu, setOpenEventMenu] =useState(false)
-const edit =(itemId)=>{
-  setEditEvent(true)
-  console.log(itemId)
+const edit = (itemId)=>{
+  document.getElementById(`event${itemId}`).style.display ="block"
 }
-    return(
-        <>
-        <div className="event-container" 
+
+// to cancel editing
+const cancelEdt =(itemId)=>{
+  document.getElementById(`event${itemId}`).style.display ="none"
+
+}
+console.log(updatedd)
+const UpdateEvent = async(itemId)=>{
+  try {
+    const ref = doc(db, "events", itemId);
+    await updateDoc(ref, updatedd);
+    console.log(`Event updated!:${itemId}` );
+    console.log(ref) 
+    navigate("/");
+    window.location.href="/" 
+  }
+   catch (error) {
+  console.error("Error updating event:", error); 
+  } 
+
+} 
+const today = eventlist.filter((item) => format(item.startDate) == format(date) )
+console.log(today)
+    return( 
+        <> 
+        <div className="container" 
         style={eventButton? {display:"none"}: {display: "block"}}>
           <div className="grt">
             <h2>Welcome back</h2>
             <button >{formatMonth(date)} {formatDate(date)}</button>
           </div>
-          <div className="search">
-            <></>
+          <div className="search">  
+            <></> 
           <input type="text" />
-          </div>
+          </div> 
           <div className="eventDisplay">
             <h2 onClick={()=>setDisplayBtn(true)}
             style={displayBtn? {color:"black"} : {color:"rgb(187, 185, 185)"}}
@@ -225,10 +250,10 @@ const edit =(itemId)=>{
               style={!displayBtn? {color:"black"} : {color:"rgb(187, 185, 185)"}}
             >Upcoming</h2>
           </div>
-          
           {loading? <div className="spinner"></div>:
           <>
-                    {displayBtn? today.map((eventlist,index) =>(<>
+            {displayBtn? today.map((eventlist,index) =>(
+            <section className="event-container">
             <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
@@ -249,7 +274,7 @@ const edit =(itemId)=>{
               onClick={() => removeItem(eventlist.id)}
             />
             <BiPen
-              style={!openEventMenu? {display:"none"}:{display:"block"}}
+            style={!openEventMenu? {display:"none"}:{display:"block"}}
             onClick={() =>edit(eventlist.id)}/>
            </div>
             <div onClick={() =>setOpenEventMenu(true)}
@@ -260,22 +285,22 @@ const edit =(itemId)=>{
               <b>.</b>
             </div>
           </div>
-
           <form
+          className="edit-form"
+          id={`event${eventlist.id}`}             
         action=""
         style={!editEvent? {display:"none"}:{display:"block"}}
         onSubmit={(event) => {
           event.preventDefault();
           // handleAddToEvent();
         }}
-        // style={eventButton? {display:"block"} :{display:"none"}}
+        // style={eventButton? {display:"block"} : {display:"none"}}
       >
-        <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
         {/* <ToastContainer position="top-center" autoClose={3000} /> */}
 
         {/* {errData.title && <p style={{ color: "red" }}>{errData.title}</p>} */}
 <textarea
-        value={eventlist.eventTitle}
+        value={updatedd.eventTitle}
         onChange={handleChange}
         placeholder="Create event"
         rows="5"
@@ -291,11 +316,11 @@ const edit =(itemId)=>{
         <label htmlFor="startDate"><b>Starts:</b>
          </label>
          <input type="date" name="startDate"
-         value={eventlist.startDate} required
+         value={updatedd.startDate} required
          onChange={handleChange}
          id="eventDate" placeholder={"date"}/>
         <input type="time" name="startTime" 
-        id="" value={eventlist.startTime} required
+        id="" value={updatedd.startTime} required
         onChange={handleChange}
         />
         </div>
@@ -305,17 +330,17 @@ const edit =(itemId)=>{
          <label htmlFor="endDate"><b>End:</b>
          </label>
          <input type="date" name="endDate"
-         value={eventlist.endDate} required
+         value={updatedd.endDate} required
          onChange={handleChange}
          id="eventDate" placeholder={"date"}/>
          <input type="time" name="endTime"
-         id="" value={eventlist.endTime} required
+         id="" value={updatedd.endTime} required
          onChange={handleChange}/>
        </div>
        </div>
                {/* {errData.eventCountry && <p style={{ color: "red" }}>{errData.eventCountry}</p>} */}
        <div id='location'>
-       <select value={eventlist.eventCountry} name='eventCountry' onChange={handleChange}>
+       <select value={updatedd.eventCountry} name='eventCountry' onChange={handleChange}>
       <option value="" name='eventCountry'>-- Select Country --</option>
       {countries.map((eventCountry, index) => (
         <option key={index} value={eventCountry}>
@@ -323,7 +348,7 @@ const edit =(itemId)=>{
         </option>
       ))}
     </select>
-    <select value={eventlist.eventState} name='eventState' onChange={handleChange}>
+    <select value={updatedd.eventState} name='eventState' onChange={handleChange}>
       <option value="">-- Select State --</option>
       {nigeriaStates.map((eventState, index) => (
         <option key={index} value={eventState}>
@@ -336,15 +361,23 @@ const edit =(itemId)=>{
        <div className="address">
        <label htmlFor="address">Address:</label>
        <input type="text" id="address" name='address' 
-       value={eventlist.
+       value={updatedd.
        address}
         onChange={handleChange} 
         placeholder="Event's address"/>
        </div>
+       <input 
+                style={{backgroundColor:"rgb(2, 107, 2)"}}
+         className="submit-btn" type="submit" 
+        onClick={() => UpdateEvent (eventlist.id)} value={"Save"} />
+         <input 
+                  style={{backgroundColor:"rgb(230, 116, 22)"}}
+         className="submit-btn" type="submit" 
+        onClick={() => cancelEdt (eventlist.id)} value={"Cancel"} />
       </form>
-          </>
+          </section>
 )) : upcomingEvent.map((eventlist,index) =>(
-  <>
+  <section className="event-container">
             <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
@@ -376,22 +409,22 @@ const edit =(itemId)=>{
               <b>.</b>
             </div>
           </div>
-
           <form
+            className="edit-form"
+          id={`event${eventlist.id}`}             
         action=""
         style={!editEvent? {display:"none"}:{display:"block"}}
         onSubmit={(event) => {
           event.preventDefault();
           // handleAddToEvent();
         }}
-        // style={eventButton? {display:"block"} :{display:"none"}}
+        // style={eventButton? {display:"block"} : {display:"none"}}
       >
-        <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
         {/* <ToastContainer position="top-center" autoClose={3000} /> */}
 
         {/* {errData.title && <p style={{ color: "red" }}>{errData.title}</p>} */}
 <textarea
-        value={eventlist.eventTitle}
+        value={updatedd.eventTitle}
         onChange={handleChange}
         placeholder="Create event"
         rows="5"
@@ -407,11 +440,11 @@ const edit =(itemId)=>{
         <label htmlFor="startDate"><b>Starts:</b>
          </label>
          <input type="date" name="startDate"
-         value={eventlist.startDate} required
+         value={updatedd.startDate} required
          onChange={handleChange}
          id="eventDate" placeholder={"date"}/>
         <input type="time" name="startTime" 
-        id="" value={eventlist.startTime} required
+        id="" value={updatedd.startTime} required
         onChange={handleChange}
         />
         </div>
@@ -421,17 +454,17 @@ const edit =(itemId)=>{
          <label htmlFor="endDate"><b>End:</b>
          </label>
          <input type="date" name="endDate"
-         value={eventlist.endDate} required
+         value={updatedd.endDate} required
          onChange={handleChange}
          id="eventDate" placeholder={"date"}/>
          <input type="time" name="endTime"
-         id="" value={eventlist.endTime} required
+         id="" value={updatedd.endTime} required
          onChange={handleChange}/>
        </div>
        </div>
                {/* {errData.eventCountry && <p style={{ color: "red" }}>{errData.eventCountry}</p>} */}
        <div id='location'>
-       <select value={eventlist.eventCountry} name='eventCountry' onChange={handleChange}>
+       <select value={updatedd.eventCountry} name='eventCountry' onChange={handleChange}>
       <option value="" name='eventCountry'>-- Select Country --</option>
       {countries.map((eventCountry, index) => (
         <option key={index} value={eventCountry}>
@@ -439,7 +472,7 @@ const edit =(itemId)=>{
         </option>
       ))}
     </select>
-    <select value={eventlist.eventState} name='eventState' onChange={handleChange}>
+    <select value={updatedd.eventState} name='eventState' onChange={handleChange}>
       <option value="">-- Select State --</option>
       {nigeriaStates.map((eventState, index) => (
         <option key={index} value={eventState}>
@@ -452,13 +485,16 @@ const edit =(itemId)=>{
        <div className="address">
        <label htmlFor="address">Address:</label>
        <input type="text" id="address" name='address' 
-       value={eventlist.
+       value={updatedd.
        address}
         onChange={handleChange} 
         placeholder="Event's address"/>
        </div>
+       <input 
+         className="submit-btn" type="submit" 
+        onClick={() => UpdateEvent (eventlist.id)} value={"Save"} />
       </form>
-          </>
+          </section>
 ))}
           </>
           }
