@@ -3,7 +3,7 @@ import "./eventlist.scss"
 import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getAuth, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import {BiPen, BiPlus, BiTime, BiTrash} from "react-icons/bi"
+import {BiCollapse, BiPen, BiPencil, BiPlus, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
 import { countries } from "../createEvent";
 import { nigeriaStates } from "../createEvent";
@@ -213,6 +213,9 @@ const cancelEdt =(itemId)=>{
   document.getElementById(`event${itemId}`).style.display ="none"
 
 }
+const openMenu =(itemId) =>{
+  document.getElementById(`editIcons${itemId}`).style.display="block"
+}
 console.log(updatedd)
 const UpdateEvent = async(itemId)=>{
   try {
@@ -242,6 +245,8 @@ console.log(today)
             <></> 
           <input type="text" />
           </div> 
+          <button style={eventButton? {visibility:"hidden"}:{visibility:"visible"}}
+             onClick={toggleEventBtn}><BiPlus/> Create Event</button>
           <div className="eventDisplay">
             <h2 onClick={()=>setDisplayBtn(true)}
             style={displayBtn? {color:"black"} : {color:"rgb(187, 185, 185)"}}
@@ -267,23 +272,26 @@ console.log(today)
               <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
             </div>
            <div className="edit-icons"
+            id={`editIcons${eventlist.id}`}
             style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
+
+            // style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
            >
+            <BiPencil
+            onClick={() =>edit(eventlist.id)}/>
            <BiTrash 
-            style={!openEventMenu? {display:"none"}:{display:"block"}}
               onClick={() => removeItem(eventlist.id)}
             />
-            <BiPen
-            style={!openEventMenu? {display:"none"}:{display:"block"}}
-            onClick={() =>edit(eventlist.id)}/>
+            
            </div>
-            <div onClick={() =>setOpenEventMenu(true)}
+           {/* {!openEventMenu?  <div 
+           onClick={() => openMenu(eventlist.id)}
             style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
-            >
-              <b>.</b>
-              <b>.</b>
-              <b>.</b>
-            </div>
+            className="menu-bar">
+              <h1>.</h1>
+              <h1>.</h1>
+              <h1>.</h1>
+            </div>:<div className="menu-bar" ><  BiCollapse onClick={() =>setOpenEventMenu(false)}  /></div>} */}
           </div>
           <form
           className="edit-form"
@@ -500,8 +508,7 @@ console.log(today)
           }
 
 
- <button style={eventButton? {visibility:"hidden"}:{visibility:"visible"}}
-             onClick={toggleEventBtn}><BiPlus/> Create Event</button>
+ 
         </div>
         </>
     )
