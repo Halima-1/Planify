@@ -51,6 +51,7 @@ input {
     background-color: navy;
     color: white;
     width: 40%;
+    margin: 0 auto;
 }
 
 .google {

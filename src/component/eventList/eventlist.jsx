@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import "./eventlist.scss"
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import { getAuth, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import {BiBell, BiCollapse, BiPen, BiPencil, BiPlus, BiSolidNotification, BiTime, BiTrash} from "react-icons/bi"
+import { getAuth, onAuthStateChanged, signOut, updateCurrentUser } from "firebase/auth";
+import {BiBell, BiCollapse, BiLogOut, BiPen, BiPencil, BiPlus, BiSolidNotification, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
 import { countries } from "../createEvent";
 import { nigeriaStates } from "../createEvent";
@@ -271,6 +271,20 @@ const cancleRsvp=async(itemId) =>{
   console.error("Error updating event:", error); 
   } 
 }
+
+// to log out
+const handleLogout = async () => {
+  const auth = getAuth();
+
+  try {
+    await signOut(auth);
+    // console.log("User signed out successfully!");
+    window.location.href = "/login";
+    localStorage.removeItem("oldUser")
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
 const today = eventlist.filter((item) => format(item.startDate) === format(date) )
 console.log(today)
     return( 
@@ -282,6 +296,7 @@ console.log(today)
            <div>
            <BiBell style={notify? {backgroundColor:"red"}: {color:"blue"}}/>
             <button >{formatMonth(date)} {formatDate(date)}</button>
+            <BiLogOut className="logout" onClick={handleLogout}/>
            </div>
           </div>
           <div className="search">  
@@ -289,7 +304,7 @@ console.log(today)
           <input type="text" />
           </div> 
           <button style={eventButton? {visibility:"hidden"}:{visibility:"visible"}}
-             onClick={toggleEventBtn}><BiPlus/> Create Event</button>
+             onClick={toggleEventBtn}><BiPlus/> Create new event</button>
           <div className="eventDisplay">
             <h2 onClick={()=>setDisplayBtn(true)}
             style={displayBtn? {color:"black"} : {color:"rgb(187, 185, 185)"}}
@@ -313,7 +328,11 @@ console.log(today)
               <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
               <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
-              <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
+               <p> <BiSolidLocationPlus className="icon"/><span>{eventlist.address}</span></p>
+
+              <p><BiSolidLocationPlus className="icon"/> 
+              <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span>
+              </p>
             </div>
            <div className="edit-icons"
             id={`editIcons${eventlist.id}`}
@@ -329,8 +348,11 @@ console.log(today)
             
            </div>
           </div>
+          {/* <div className="titleDetails">
+            <p>{eventlist.eventTitle}</p>
+          </div> */}
              <div className="viewDet">
-              <button className="view">
+              <button className="view" style={{visibility:"hidden"}}>
                 View details
               </button>
              {eventlist.guest.includes(user.email)?
@@ -425,7 +447,7 @@ console.log(today)
         onClick={() => UpdateEvent (eventlist.id)} value={"Save"} />
          <input 
                   style={{backgroundColor:"rgb(230, 116, 22)"}}
-         className="submit-btn" type="submit" 
+         className="submit-btn" type="submit"   
         onClick={() => cancelEdt (eventlist.id)} value={"Cancel"} />
       </form>
           </section>
@@ -440,6 +462,7 @@ console.log(today)
             </div>
             <div className="details">
               <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
+              <p>{eventlist.address}</p>
               <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
               <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
