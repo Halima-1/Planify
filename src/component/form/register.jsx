@@ -67,6 +67,7 @@ function Register() {
       console.log('log in successful');
 
         }
+        localStorage.setItem("oldUser",formData.email)
      }
 
 // signing in with google

@@ -2,9 +2,20 @@ form {
     width: 350px !important;
     display: flex;
     flex-direction: column;
-    padding: 20px 10px;
+    padding: 20px;
     margin: auto;
     align-items: center;
+
+
+    @media (min-width: 600px) {
+        width: 350px !important;
+        display: flex;
+        flex-direction: column;
+        padding: 20px 100px;
+        margin: auto;
+        align-items: center;
+
+    }
 }
 
 .spinner {

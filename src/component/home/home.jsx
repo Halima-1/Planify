@@ -4,7 +4,7 @@ import CreateEvent from '../createEvent'
 import Eventlist from '../eventList/eventlist'
 import {BiPlus} from "react-icons/bi"
 import { auth } from '../../config/firebase'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 function Home() {
     const [eventButton, setEventButton] =useState(false)
     const [notify,setNotify] =useState(false)
@@ -32,10 +32,10 @@ function Home() {
       }
       console.log(eventButton)
       
-
+      const checkUser =localStorage.getItem("oldUser")
     return (
         <>
-        <section className='container'>
+       {checkUser?  <section className='container'>
             {/* <input type="text" /> */}
             <Eventlist 
             notify={notify}
@@ -49,7 +49,19 @@ function Home() {
         eventButton={eventButton}/>
            
 
+        </section>:
+        <section className="heroImage">
+            <h2>Planify</h2>
+            <h3>Seamless event booking made easy</h3>
+            <div >
+                <img src="https://media.istockphoto.com/id/1903623112/vector/event-planner-vector-illustration-with-planning-schedule-time-management-business-agenda-and.jpg?s=612x612&w=0&k=20&c=1Ad3hjpHcjllhcJunBmnQT9PQkTGsyXBjV4LWvzHTtw=" alt="hero image" />
+            </div>
+            <div >
+                <button onClick={() =>navigate ("/register")}>Create account</button>
+                <p>Already have an account? <Link to="login">Sign up</Link></p>
+            </div>
         </section>
+        }
         </>
     )
 }
