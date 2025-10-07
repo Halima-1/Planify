@@ -14,16 +14,16 @@ export const nigeriaStates = [
   "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo",
   "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"
 ];
-function CreateEvent({eventButton, toggleEventBtn}) {
+function CreateEvent({eventButton, toggleEventBtn,setNotify, notify}) {
     const [errData, setErrData] = useState({});
-    
+    const [notification, setNotification] =useState({})
     const [eventList, setEventList] = useState({
         eventTitle: "",
         startTime: "10:12",
         startDate:"2025-01-01",
         endTime: "10:10",
         endDate:"2025-01-01",
-        guest:"",
+        guest:[],
         eventCountry:"",
         eventState:"",
         address:"",
@@ -76,11 +76,27 @@ function CreateEvent({eventButton, toggleEventBtn}) {
                   createdAt: new Date(),
                   userId: user.uid,
                 });
-                toast.success("Login successful! 🎉");
+
+                // const notifyRef = collection(db, "notifications");
+                //     await addDoc(notifyRef, {
+                //       title:`${eventList.eventTitle} added by ${user.email}`,
+                //       createdAt: new Date(),
+                //       userId: user.uid,
+                //     });
+                    // const payload ={
+                      // title:`${eventList.eventTitle} added by ${user.email}`,
+                      // userId: user.uid,
+                    // }
+                    // await addDoc(notifyRef, payload);
+                    //  console.log("notify:"+ JSON.stringify(payload))
+
+                toast.success("Event added successfully! 🎉");
                 window.location.href="/"
                 console.log(`Added ${eventList.eventTitle} to events`);
-        } catch (error) {
-        }        console.log(user)
+        }catch (error) {
+        }    
+      
+        console.log(user)
         }
         setErrData(newErr)
       }
@@ -95,14 +111,14 @@ function CreateEvent({eventButton, toggleEventBtn}) {
         }}
         style={eventButton? {display:"block"} :{display:"none"}}
       >
-        <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
+        <h2 style={({ color: "navy", marginBottom: 30 })}>Create event</h2>
         <ToastContainer position="top-center" autoClose={3000} />
 
         {errData.title && <p style={{ color: "red" }}>{errData.title}</p>}
 <textarea
         value={eventList.eventTitle}
         onChange={handleChange}
-        placeholder="Create event"
+        placeholder="Event title"
         rows="5"
         cols="30"
         name='eventTitle'

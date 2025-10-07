@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react"
 import "./eventlist.scss"
-import { collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getAuth, onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import {BiCollapse, BiPen, BiPencil, BiPlus, BiTime, BiTrash} from "react-icons/bi"
+import {BiBell, BiCollapse, BiPen, BiPencil, BiPlus, BiSolidNotification, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
 import { countries } from "../createEvent";
 import { nigeriaStates } from "../createEvent";
 import { useNavigate } from "react-router-dom";
+// import { notify } from "../createEvent";
+// import { setNotify } from "../createEvent";
 
-
-const Eventlist =({eventButton,toggleEventBtn}) =>{
+const Eventlist =({eventButton,toggleEventBtn,notify,setNotify}) =>{
   
     const [eventlist,setEventlist] =useState([])
     const [loading, setLoading] = useState(true);
     const [upcomingEvent, setUpcomingEvent] =useState([])
     const [pastEvent, setPastEvent] =useState([])
+    const [quantity, setQuantity] =useState(0)
     const navigate = useNavigate()
 
     // const [user, setUser] = useState(null);
@@ -52,7 +54,7 @@ const isPastEvent = (eventDate) => {
               ...doc.data()
             }));
             setEventlist(eventsData);
-
+            // eve
              // filter upcoming
         const upcoming = eventsData.filter((ev) =>
         isUpcomingEvent(toDate(ev.startDate))
@@ -190,7 +192,7 @@ const [updatedd, setUpdatedDataa] = useState({
   startDate:"2025-01-01",
   endTime: "10:10",
   endDate:"2025-01-01",
-  guest:"",
+  guest:{},
   eventCountry:"",
   eventState:"",
   address:"",
@@ -213,10 +215,11 @@ const cancelEdt =(itemId)=>{
   document.getElementById(`event${itemId}`).style.display ="none"
 
 }
-const openMenu =(itemId) =>{
-  document.getElementById(`editIcons${itemId}`).style.display="block"
-}
+// const openMenu =(itemId) =>{
+//   document.getElementById(`editIcons${itemId}`).style.display="block"
+// }
 console.log(updatedd)
+// to edit an event
 const UpdateEvent = async(itemId)=>{
   try {
     const ref = doc(db, "events", itemId);
@@ -231,7 +234,44 @@ const UpdateEvent = async(itemId)=>{
   } 
 
 } 
-const today = eventlist.filter((item) => format(item.startDate) == format(date) )
+// const guest=    {rsvps:user.email}
+
+// to RSVP
+const rsvp=async(itemId) =>{
+  // console.log(eventlist.guest) 
+  try {
+    const ref = doc(db, "events", itemId);
+    await updateDoc(ref, {
+      guest: arrayUnion(user.email),
+    });
+    console.log(`who rsvp:${user.email}` );
+    console.log(ref) 
+    // navigate("/");
+    // window.location.href="/" 
+  }
+   catch (error) {
+  console.error("Error updating event:", error); 
+  } 
+}
+
+// to cancle RSVP
+const cancleRsvp=async(itemId) =>{
+  // console.log(eventlist.guest) 
+  try {
+    const ref = doc(db, "events", itemId);
+    await updateDoc(ref, {
+      guest: arrayRemove(user.email),
+    });
+    console.log(`who rsvp:${user.email}` );
+    console.log(ref) 
+    // navigate("/");
+    // window.location.href="/" 
+  }
+   catch (error) {
+  console.error("Error updating event:", error); 
+  } 
+}
+const today = eventlist.filter((item) => format(item.startDate) === format(date) )
 console.log(today)
     return( 
         <> 
@@ -239,7 +279,10 @@ console.log(today)
         style={eventButton? {display:"none"}: {display: "block"}}>
           <div className="grt">
             <h2>Welcome back</h2>
+           <div>
+           <BiBell style={notify? {backgroundColor:"red"}: {color:"blue"}}/>
             <button >{formatMonth(date)} {formatDate(date)}</button>
+           </div>
           </div>
           <div className="search">  
             <></> 
@@ -259,14 +302,15 @@ console.log(today)
           <>
             {displayBtn? today.map((eventlist,index) =>(
             <section className="event-container">
-            <div className="event today" key={index}>
+           <div className="eventt">
+             <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
               <b>{formatDate(eventlist.startDate)}</b>
               <span>{formatDay(eventlist.startDate)}</span>
             </div>
             <div className="details">
-              <b>{(eventlist.eventTitle)}</b>
+              <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
               <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
               <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
@@ -284,15 +328,17 @@ console.log(today)
             />
             
            </div>
-           {/* {!openEventMenu?  <div 
-           onClick={() => openMenu(eventlist.id)}
-            style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
-            className="menu-bar">
-              <h1>.</h1>
-              <h1>.</h1>
-              <h1>.</h1>
-            </div>:<div className="menu-bar" ><  BiCollapse onClick={() =>setOpenEventMenu(false)}  /></div>} */}
           </div>
+             <div className="viewDet">
+              <button className="view">
+                View details
+              </button>
+             {eventlist.guest.includes(user.email)?
+          <button onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
+          <button onClick={() =>rsvp (eventlist.id)}>RSVP</button>
+ }
+             </div>
+           </div>
           <form
           className="edit-form"
           id={`event${eventlist.id}`}             
@@ -302,7 +348,6 @@ console.log(today)
           event.preventDefault();
           // handleAddToEvent();
         }}
-        // style={eventButton? {display:"block"} : {display:"none"}}
       >
         {/* <ToastContainer position="top-center" autoClose={3000} /> */}
 
@@ -386,37 +431,43 @@ console.log(today)
           </section>
 )) : upcomingEvent.map((eventlist,index) =>(
   <section className="event-container">
-            <div className="event today" key={index}>
+            <div className="eventt">
+             <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
               <b>{formatDate(eventlist.startDate)}</b>
               <span>{formatDay(eventlist.startDate)}</span>
             </div>
             <div className="details">
-              <b>{(eventlist.eventTitle)}</b>
+              <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
               <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
               <p><BiSolidLocationPlus className="icon"/> <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span></p>
             </div>
            <div className="edit-icons"
+            id={`editIcons${eventlist.id}`}
             style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
+
+            // style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
            >
+            <BiPencil
+            onClick={() =>edit(eventlist.id)}/>
            <BiTrash 
-            style={!openEventMenu? {display:"none"}:{display:"block"}}
               onClick={() => removeItem(eventlist.id)}
             />
-            <BiPen
-              style={!openEventMenu? {display:"none"}:{display:"block"}}
-            onClick={() =>edit(eventlist.id)}/>
+            
            </div>
-            <div onClick={() =>setOpenEventMenu(true)}
-            style={eventlist.userId === user?.uid ?{display:"block"} : {display:"none"}}
-            >
-              <b>.</b>
-              <b>.</b>
-              <b>.</b>
-            </div>
           </div>
+             <div className="viewDet">
+              <button className="view">
+                View details
+              </button>
+             {eventlist.guest.includes(user.email)?
+          <button onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
+          <button onClick={() =>rsvp (eventlist.id)}>RSVP</button>
+ }
+             </div>
+           </div>
           <form
             className="edit-form"
           id={`event${eventlist.id}`}             
