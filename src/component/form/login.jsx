@@ -73,6 +73,7 @@ function Login() {
       // navigate("/", { replace: true });
       return
     }
+    localStorage.setItem("oldUser",formData.email)
     console.log(errData)
 
   };

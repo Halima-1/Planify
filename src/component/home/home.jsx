@@ -58,7 +58,7 @@ function Home() {
             </div>
             <div >
                 <button onClick={() =>navigate ("/register")}>Create account</button>
-                <p>Already have an account? <Link to="login">Sign up</Link></p>
+                <p>Already have an account? <Link to="login">Sign in</Link></p>
             </div>
         </section>
         }

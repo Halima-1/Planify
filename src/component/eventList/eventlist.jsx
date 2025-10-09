@@ -178,6 +178,7 @@ const removeItem = async (itemId) => {
   try {
     await deleteDoc(doc(db, "events", itemId.toString()));
     console.log("Event deleted!");
+    window.location.href = "/login";
   } catch (err) {
     console.error("Error deleting event:", err);
   }
@@ -247,7 +248,7 @@ const rsvp=async(itemId) =>{
     console.log(`who rsvp:${user.email}` );
     console.log(ref) 
     // navigate("/");
-    // window.location.href="/" 
+    window.location.href="/" 
   }
    catch (error) {
   console.error("Error updating event:", error); 
@@ -265,7 +266,7 @@ const cancleRsvp=async(itemId) =>{
     console.log(`who rsvp:${user.email}` );
     console.log(ref) 
     // navigate("/");
-    // window.location.href="/" 
+    window.location.href="/" 
   }
    catch (error) {
   console.error("Error updating event:", error); 

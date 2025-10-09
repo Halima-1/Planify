@@ -1,20 +1,43 @@
-<<<<<<< HEAD
 # Planify
-=======
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Planify – Event Management App
 
-Currently, two official plugins are available:
+Planify is a web-based event management platform built with React, Firebase, and Google Maps API, designed to help users easily create, view, and manage events. Users can RSVP to events, view event locations on a map, and manage their own created events with edit and delete options.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🚀 Features
 
-## React Compiler
+🧭 User Authentication
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Secure login and registration using Firebase Authentication.
+Logout functionality to safely end user sessions.
 
-## Expanding the ESLint configuration
+🎉 Event Management
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
->>>>>>> 874f1d8 (react-app created)
+Create new events with title, date, time, location, and policies.
+View upcoming and past events separately.
+Logged-in users can edit or delete their own events.
+
+
+View the event address directly on an interactive Google Map.
+
+📩 RSVP System
+
+Users can RSVP for events.
+Each RSVP is stored as part of the event’s guest list in Firestore.
+
+🔔 Notifications
+
+Event creation triggers a notification stored in Firestore.
+🧩 Tech Stack
+Category	Technology
+Frontend	React (Vite or Create React App)
+Backend	Firebase Firestore
+Auth	Firebase Authentication
+
+Future Improvements
+Email notifications for RSVPs
+Event categories and tags
+Google Maps Integration
+Dark mode
+Search and filter by state or country
+Mobile push notifications
