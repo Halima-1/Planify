@@ -1,4 +1,4 @@
-import { collection, getDocs } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { auth, db } from '../config/firebase';
@@ -116,6 +116,42 @@ const formatYear = (dateVal) => {
 
         !loading?  console.log(eventt):console.log(eventt)
         const checkUser =localStorage.getItem("oldUser")
+
+        // to RSVP
+const rsvp=async(itemId) =>{
+  // console.log(eventlist.guest) 
+  try {
+    const ref = doc(db, "events", itemId);
+    await updateDoc(ref, {
+      guest: arrayUnion(user.email),
+    });
+    console.log(`who rsvp:${user.email}` );
+    console.log(ref) 
+    // navigate("/");
+    window.location.href=id 
+  }
+   catch (error) {
+  console.error("Error updating event:", error); 
+  } 
+}
+
+// to cancle RSVP
+const cancleRsvp=async(itemId) =>{
+  // console.log(eventlist.guest) 
+  try {
+    const ref = doc(db, "events", itemId);
+    await updateDoc(ref, {
+      guest: arrayRemove(user.email),
+    });
+    console.log(`who rsvp:${user.email}` );
+    console.log(ref) 
+    // navigate("/");
+    window.location.href=id 
+  }
+   catch (error) {
+  console.error("Error updating event:", error); 
+  } 
+}
       return (
         <> 
         {checkUser? <div className="container" >

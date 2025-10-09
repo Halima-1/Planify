@@ -483,7 +483,7 @@ console.log(today)
            </div>
           </div>
              <div className="viewDet">
-              <button className="view">
+             <button className="view" style={{visibility:"hidden"}}>
                 View details
               </button>
              {eventlist.guest.includes(user.email)?

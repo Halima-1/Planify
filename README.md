@@ -1,5 +1,6 @@
 # Planify
 
+# https://planiffyy.netlify.app/
 Planify – Event Management App
 
 Planify is a web-based event management platform built with React, Firebase, and Google Maps API, designed to help users easily create, view, and manage events. Users can RSVP to events, view event locations on a map, and manage their own created events with edit and delete options.
@@ -17,8 +18,6 @@ Create new events with title, date, time, location, and policies.
 View upcoming and past events separately.
 Logged-in users can edit or delete their own events.
 
-
-View the event address directly on an interactive Google Map.
 
 📩 RSVP System
 
