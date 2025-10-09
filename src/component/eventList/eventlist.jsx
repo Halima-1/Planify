@@ -302,7 +302,7 @@ console.log(today)
           </div>
           <div className="search">  
             <></> 
-          <input type="text" />
+          <input type="text" placeholder="search" />
           </div> 
           <button style={eventButton? {visibility:"hidden"}:{visibility:"visible"}}
              onClick={toggleEventBtn}><BiPlus/> Create new event</button>

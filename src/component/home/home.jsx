@@ -4,14 +4,15 @@ import CreateEvent from '../createEvent'
 import Eventlist from '../eventList/eventlist'
 import {BiPlus} from "react-icons/bi"
 import { auth } from '../../config/firebase'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+
 function Home() {
     const [eventButton, setEventButton] =useState(false)
     const [notify,setNotify] =useState(false)
     const user =auth.currentUser
     const navigate =useNavigate()
     const [loading,setLoading]= useState()
-
+             const params = useParams();
     const toggleEventBtn = async() =>{
         const user =auth.currentUser
         try{
@@ -25,7 +26,6 @@ function Home() {
             console.log(user)
             setLoading(false)
         }
-        
         catch (error) {
             console.error("Error fetching user: ", error);
           };
@@ -33,6 +33,12 @@ function Home() {
       console.log(eventButton)
       
       const checkUser =localStorage.getItem("oldUser")
+     
+//   const details = product.filter((item) => {
+//     return item.id == id;
+//   });
+const id = params.id;
+  console.log(params.id)
     return (
         <>
        {checkUser?  <section className='container'>
@@ -41,8 +47,7 @@ function Home() {
             notify={notify}
             setNotify={setNotify}
             toggleEventBtn={toggleEventBtn}
-            eventButton={eventButton}/>
-            
+            eventButton={eventButton}/>           
         <CreateEvent 
         notify={notify}
         setNotify={setNotify}
