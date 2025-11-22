@@ -3,7 +3,7 @@ import "./eventlist.scss"
 import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDocs, getFirestore, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { getAuth, onAuthStateChanged, signOut, updateCurrentUser } from "firebase/auth";
-import {BiBell, BiCollapse, BiLogOut, BiPen, BiPencil, BiPlus, BiSolidNotification, BiTime, BiTrash} from "react-icons/bi"
+import {BiBell, BiCollapse, BiCopy, BiLogOut, BiPen, BiPencil, BiPlus, BiSolidNotification, BiTime, BiTrash} from "react-icons/bi"
 import { BiSolidLocationPlus } from "react-icons/bi";
 import { countries } from "../createEvent";
 import { nigeriaStates } from "../createEvent";
@@ -288,6 +288,17 @@ const handleLogout = async () => {
 };
 const today = eventlist.filter((item) => format(item.startDate) === format(date) )
 console.log(today)
+
+// to copy event link
+const copyLink =(eventLink)=>{
+  navigator.clipboard.writeText(eventLink)
+  .then(() =>{
+    alert("event link copied")
+  })
+  .catch (err =>{
+    console.error("Failed to copy link:", err);
+  })
+}
     return( 
         <> 
         <div className="container" 
@@ -329,8 +340,27 @@ console.log(today)
               <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
               <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
-               <p> <BiSolidLocationPlus className="icon"/><span>{eventlist.address}</span></p>
-
+               <p> <svg 
+                 onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(eventlist.address)}`,
+                    "_blank"
+                  )
+                }
+                className="icon"
+               xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+  <path fill="#EA4335" d="M12 2.5c-3.6 0-6.5 2.9-6.5 6.5 0 5 6.5 12.5 6.5 12.5S18.5 14 18.5 9c0-3.6-2.9-6.5-6.5-6.5z"/>
+  <circle cx="12" cy="9" r="3.2" fill="#fff"/>
+               </svg>
+<span>{eventlist.address}</span></p>
+               {/* <a href=`https://planiffyy.netlify.app/event/${eventlist.id}`></a> */}
+               <a href="">https://planiffyy.netlify.app/event/{eventlist.id}</a> 
+               <BiCopy onClick={
+                () =>{
+                  const eventLink =`https://planiffyy.netlify.app/event/${eventlist.id}`
+                  copyLink (eventLink)} 
+                }
+                />
               <p><BiSolidLocationPlus className="icon"/> 
               <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span>
               </p>
