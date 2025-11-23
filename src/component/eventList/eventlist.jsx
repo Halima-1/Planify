@@ -378,22 +378,21 @@ const copyLink =(copiedId, eventLink)=>{
           {/* <div className="titleDetails">
             <p>{eventlist.eventTitle}</p>
           </div> */}
-           {eventlist.guest.includes(user.email)?
-          <button className="rsvp" onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
-          <button className="rsvp" onClick={() =>rsvp (eventlist.id)}>RSVP</button>
- }
              <div className="viewDet">
-             <span className="link"><a style={{fontSize:12}} href="">https://planiffyy.netlify.app/event/{eventlist.id}</a> 
-               {copiedId === eventlist.id? <BiCheckDouble style={{marginLeft:20}} 
+             <span className="link"><a style={{fontSize:12}} href="https://planiffyy.netlify.app/event/">planiffyy.netlify.app/event/{eventlist.id}</a> 
+               {copiedId === eventlist.id? <BiCheckDouble style={{marginLeft:10}} 
                 />:
-                <BiCopy style={{marginLeft:20}} onClick={
+                <BiCopy style={{marginLeft:10}} onClick={
                   () =>{
                     const eventLink =`https://planiffyy.netlify.app/event/${eventlist.id}`
                     copyLink (eventlist.id,eventLink)} 
                   }
                   />}
                </span>
-            
+             {eventlist.guest.includes(user.email)?
+          <button className="rsvp" onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
+          <button className="rsvp" onClick={() =>rsvp (eventlist.id)}>RSVP</button>
+ }
              </div>
            </div>
           <form
