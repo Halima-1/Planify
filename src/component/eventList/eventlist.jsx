@@ -305,19 +305,20 @@ const copyLink =(copiedId, eventLink)=>{
         <> 
         <div className="container" 
         style={eventButton? {display:"none"}: {display: "block"}}>
+                      <h2>Planify</h2>
           <div className="grt">
-            <h2>Welcome back</h2>
+            {/* <h2>Welcome back</h2> */}
+            <button >{formatMonth(date)} {formatDate(date)}</button>
            <div>
            <BiBell style={notify? {backgroundColor:"red"}: {color:"blue"}}/>
-            <button >{formatMonth(date)} {formatDate(date)}</button>
             {/* <BiLogOut className="logout" onClick={handleLogout}/> */}
             <span onClick={handleLogout}>Log out</span>
            </div>
           </div>
-          <div className="search">  
+          {/* <div className="search">  
             <></> 
           <input type="text" placeholder="search" />
-          </div> 
+          </div>  */}
           <button style={eventButton? {visibility:"hidden"}:{visibility:"visible"}}
              onClick={toggleEventBtn}><BiPlus/> Create new event</button>
           <div className="eventDisplay">
@@ -341,7 +342,7 @@ const copyLink =(copiedId, eventLink)=>{
             </div>
             <div className="details">
               <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
-              <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
+              <p><BiTime style={{width:20, height:20}} className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
                <p> <svg 
                  onClick={() =>
@@ -357,7 +358,7 @@ const copyLink =(copiedId, eventLink)=>{
                </svg>
 <span>{eventlist.address}</span></p> 
                {/* <a href=`https://planiffyy.netlify.app/event/${eventlist.id}`></a> */}
-              <p><BiSolidLocationPlus className="icon"/> 
+              <p><BiSolidLocationPlus style={{width:20, height:20}} className="icon"/> 
               <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span>
               </p>
             </div>
@@ -390,8 +391,12 @@ const copyLink =(copiedId, eventLink)=>{
                   />}
                </span>
              {eventlist.guest.includes(user.email)?
-          <button className="rsvp" onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
-          <button className="rsvp" onClick={() =>rsvp (eventlist.id)}>RSVP</button>
+          <button 
+          style={eventlist.userId !== user?.uid ?{display:"block"} : {display:"none"}}
+          className="rsvp" onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
+          <button
+          style={eventlist.userId !== user?.uid ?{display:"block"} : {display:"none"}}
+          className="rsvp" onClick={() =>rsvp (eventlist.id)}>RSVP</button>
  }
              </div>
            </div>
@@ -487,7 +492,7 @@ const copyLink =(copiedId, eventLink)=>{
           </section>
 )) : upcomingEvent.map((eventlist,index) =>(
   <section className="event-container">
-            <div className="eventt">
+           <div className="eventt">
              <div className="event today" key={index}>
             <div className="date">
               <span className="month">{formatMonth(eventlist.startDate)}</span>
@@ -496,8 +501,7 @@ const copyLink =(copiedId, eventLink)=>{
             </div>
             <div className="details">
               <b className="title">{(eventlist.eventTitle.slice(0,25)+ "..." )}</b>
-              <p>{eventlist.address}</p>
-              <p><BiTime className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
+              <p><BiTime style={{width:20, height:20}} className="icon"/> <span>{formatTime(eventlist.startTime)}</span> - 
                <span style={{color: "blue"}}> {formatTime(eventlist.endTime)}</span></p>
                <p> <svg 
                  onClick={() =>
@@ -513,17 +517,7 @@ const copyLink =(copiedId, eventLink)=>{
                </svg>
 <span>{eventlist.address}</span></p> 
                {/* <a href=`https://planiffyy.netlify.app/event/${eventlist.id}`></a> */}
-               <p><a style={{fontSize:12}} href="">https://planiffyy.netlify.app/event/{eventlist.id}</a> 
-               {copiedId === eventlist.id? <BiCheckDouble style={{marginLeft:20}} 
-                />:
-                <BiCopy style={{marginLeft:20}} onClick={
-                  () =>{
-                    const eventLink =`https://planiffyy.netlify.app/event/${eventlist.id}`
-                    copyLink (eventlist.id,eventLink)} 
-                  }
-                  />}
-               </p>
-              <p><BiSolidLocationPlus className="icon"/> 
+              <p><BiSolidLocationPlus style={{width:20, height:20}} className="icon"/> 
               <span>{(eventlist.eventState + " State")}, {(eventlist.eventCountry)}</span>
               </p>
             </div>
@@ -541,13 +535,27 @@ const copyLink =(copiedId, eventLink)=>{
             
            </div>
           </div>
+          {/* <div className="titleDetails">
+            <p>{eventlist.eventTitle}</p>
+          </div> */}
              <div className="viewDet">
-             <button className="view" style={{visibility:"hidden"}}>
-                View details
-              </button>
+             <span className="link"><a style={{fontSize:12}} href="https://planiffyy.netlify.app/event/">planiffyy.netlify.app/event/{eventlist.id}</a> 
+               {copiedId === eventlist.id? <BiCheckDouble style={{marginLeft:10}} 
+                />:
+                <BiCopy style={{marginLeft:10}} onClick={
+                  () =>{
+                    const eventLink =`https://planiffyy.netlify.app/event/${eventlist.id}`
+                    copyLink (eventlist.id,eventLink)} 
+                  }
+                  />}
+               </span>
              {eventlist.guest.includes(user.email)?
-          <button onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
-          <button onClick={() =>rsvp (eventlist.id)}>RSVP</button>
+          <button 
+          style={eventlist.userId !== user?.uid ?{display:"block"} : {display:"none"}}
+          className="rsvp" onClick={() =>cancleRsvp (eventlist.id)}>Cancel RSVP</button>:
+          <button
+          style={eventlist.userId !== user?.uid ?{display:"block"} : {display:"none"}}
+          className="rsvp" onClick={() =>rsvp (eventlist.id)}>RSVP</button>
  }
              </div>
            </div>
