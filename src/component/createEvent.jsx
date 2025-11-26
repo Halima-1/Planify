@@ -23,7 +23,7 @@ function CreateEvent({eventButton, toggleEventBtn,setNotify, notify}) {
         startDate:"2025-01-01",
         endTime: "10:10",
         endDate:"2025-01-01",
-        guest:[],
+        guest:["olajumoke@BiLogoGmail.com"],
         eventCountry:"",
         eventState:"",
         address:"",

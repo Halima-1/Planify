@@ -2,7 +2,7 @@ import { arrayRemove, arrayUnion, collection, doc, getDocs, updateDoc } from 'fi
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { auth, db } from '../config/firebase';
-import { BiSolidLocationPlus, BiTime } from 'react-icons/bi';
+import { BiLogOut, BiSolidLocationPlus, BiTime } from 'react-icons/bi';
 
 function EventDetails() {
     const navigate =useNavigate()
@@ -152,6 +152,19 @@ const cancleRsvp=async(itemId) =>{
   console.error("Error updating event:", error); 
   } 
 }
+// to log out
+const handleLogout = async () => {
+  const auth = getAuth();
+
+  try {
+    await signOut(auth);
+    // console.log("User signed out successfully!");
+    window.location.href = "/login";
+    localStorage.removeItem("oldUser")
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
       return (
         <> 
         {checkUser? <div className="container" >
@@ -160,7 +173,7 @@ const cancleRsvp=async(itemId) =>{
            <div>
            {/* <BiBell style={notify? {backgroundColor:"red"}: {color:"blue"}}/> */}
             <button >{formatMonth(date)} {formatDate(date)}</button>
-            {/* <BiLogOut className="logout" onClick={handleLogout}/> */}
+            <BiLogOut className="logout" onClick={handleLogout}/>
            </div>
           </div>
           {loading? <div className="spinner"></div>:
@@ -191,9 +204,15 @@ const cancleRsvp=async(itemId) =>{
               <button className="view" style={{visibility:"hidden"}}>
                 View details
               </button>
-             {eventt[0].guest.includes(user.email)?
-          <button onClick={() =>cancleRsvp (eventt[0].id)}>Cancel RSVP</button>:
-          <button onClick={() =>rsvp (eventt[0].id)}>RSVP</button>
+             {!eventt[0].guest.includes(user.email)?          
+             <button
+             style={eventt[0].userId !== user?.uid ?{display:"block"} : {display:"none"}}
+
+             onClick={() =>rsvp (eventt[0].id)}>RSVP</button>
+:
+          <button
+          style={eventlist[0].userId !== user?.uid ?{display:"block"} : {display:"none"}}
+           onClick={() =>cancleRsvp (eventt[0].id)}>Cancel RSVP</button>
  }
              </div>
            </div>
