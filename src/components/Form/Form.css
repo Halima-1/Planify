@@ -1,5 +1,5 @@
-/* form {
-    width: 350px !important;
+.form {
+    width: 95% !important;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -8,7 +8,7 @@
 
 
     @media (min-width: 600px) {
-        width: 350px !important;
+        width: 60% !important;
         display: flex;
         flex-direction: column;
         padding: 20px 100px;
@@ -25,7 +25,7 @@
     border-radius: 50%;
     width: 32px;
     height: 32px;
-    animation: spin 1s linear infinite;
+    animation: spin 1s l/inear infinite;
 }
 
 @keyframes spin {
@@ -54,7 +54,7 @@ input {
     margin: 0 auto;
 }
 
-.google {
+/* .google {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -65,9 +65,9 @@ input {
     padding: 7px 0;
     padding-left: 6px;
 
-}
+} */
 
-.google img {
+/* .google img {
     width: 30px;
     height: 30px;
     border-radius: 100%;

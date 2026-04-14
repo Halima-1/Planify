@@ -23,11 +23,11 @@ function Login() {
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleValidation =async () => {
+  const handleValidation = async () => {
     const newErr = {};
     setLoading(true)
     if (!formData.email || !formData.password) {
-      newErr.notify ="⚠️ All fields are required.";
+      newErr.notify = "⚠️ All fields are required.";
       return;
     }
 
@@ -53,9 +53,9 @@ function Login() {
     finally {
       setLoading(false); // stop loading
     }
-    
+
   };
-  const handleSubmit =  () => {
+  const handleSubmit = () => {
     handleValidation()
   };
 
@@ -64,6 +64,7 @@ function Login() {
       {/* <p>{user.name}</p>
       <button onClick={changeUser}>Increase</button> */}
       <form
+        className="form"
         action=""
         onSubmit={(event) => {
           event.preventDefault();
@@ -91,7 +92,7 @@ function Login() {
           value={formData.password}
           placeholder="Password"
           onChange={handleChange}
-          disabled={loading} 
+          disabled={loading}
 
         />
         {errData.password && <p style={{ color: "red" }}>{errData.password}</p>}
@@ -99,7 +100,7 @@ function Login() {
           No account yet? <Link to={"/register"}>Sign Up</Link>
         </p>
         <input className="submit-btn" disabled={loading}
-         type="submit" value={loading ? "Logging in..." : "Login"} />
+          type="submit" value={loading ? "Logging in..." : "Login"} />
       </form>
     </div>
   );

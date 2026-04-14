@@ -7,7 +7,7 @@ import { supabase } from "../../config/supabase";
 function Register() {
   const { signup } = useAuth();
   const navigate = useNavigate();
-    // const userCart = [];
+  // const userCart = [];
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -31,7 +31,7 @@ function Register() {
       await signup(formData.email, formData.password, {
         data: { phone: formData.phone }
       });
-      
+
       alert("Registration successful! Please check your email for confirmation or log in.");
       navigate("/login", { replace: true });
     } catch (error) {
@@ -44,28 +44,28 @@ function Register() {
       setErrData(newErr);
     }
   };
-  const handleSubmit = (e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault()
     handleValidation();
   }
 
-// signing in with google
-const signInWithGoogle = async() =>{
-  try {
-    await supabase.auth.signInWithOAuth({ provider: 'google' });
-  } catch(err){
-    console.error(err);
+  // signing in with google
+  const signInWithGoogle = async () => {
+    try {
+      await supabase.auth.signInWithOAuth({ provider: 'google' });
+    } catch (err) {
+      console.error(err);
+    }
   }
-}
 
-// sign out function
-const logOut = async() =>{
-  try {
-    await supabase.auth.signOut();
-  } catch(err){
-    console.error(err);
+  // sign out function
+  const logOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error(err);
+    }
   }
-}
   return (
     <div className="register-container">
       {/* <p>{user.name}</p>
@@ -73,6 +73,8 @@ const logOut = async() =>{
       <button onClick={changeUser}>Increase</button> */}
 
       <form
+        className="form"
+
         action=""
         onSubmit={(event) => {
           handleSubmit(event);
@@ -89,7 +91,7 @@ const logOut = async() =>{
           placeholder="email"
           onChange={handleChange}
         />
-       
+
         {errData.phone && <p style={{ color: "red" }}>{errData.phone}</p>}
         <input
           type="password"
@@ -113,12 +115,12 @@ const logOut = async() =>{
         </p>
         <input className="submit-btn" type="submit" value={"Sign up"} />
       </form>
-{/* 
+      {/* 
       <button className='google' onClick={signInWithGoogle}>
                     <b>Sign up with google</b> <br />
                     <img src="../../src/assets/google logo.png" alt="google logo" />                   
                 </button> */}
-                {/* <button onClick={logOut}>sign out</button> */}
+      {/* <button onClick={logOut}>sign out</button> */}
     </div>
   );
 }
