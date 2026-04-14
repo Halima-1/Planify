@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./register.css";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-  fetchSignInMethodsForEmail } from "firebase/auth";
-import { auth } from "../../config/firebase";
+import "./Form.css";
+import { useAuth } from "../../context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
 // import { UserContext } from "../App";
 function Login() {
-  // const userContext = useContext(UserContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -34,33 +32,23 @@ function Login() {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      await login(formData.email, formData.password);
       // alert("✅ Login successful!");
       toast.success("Login successful! 🎉");
       navigate("/", { replace: true });
 
     } catch (error) {
-      if (error.code === "auth/user-not-found") {
-        toast.error("⚠️ No account found with this email."); // Show Firebase error as toast
-        newErr.notify="⚠️ No account found with this email.";}
-      else if(error.code === "auth/too-many-requests") {
+      if (error.message && error.message.includes("Invalid login credentials")) {
+        toast.error("⚠️ Invalid credentials, please try again.");
+      } else if (error.message && error.message.includes("Email not confirmed")) {
+        toast.error("✉️ Please confirm your email before logging in.");
+      } else if (error.message && error.message.includes("too many")) {
         toast.error("Too many failed login attempts. Please try again later.");
-      } else if (error.code === "auth/wrong-password") {
-        toast.error('⚠️ Incorrect password. Please try again.')
-        newErr.notify ="⚠️ Incorrect password. Please try again.";
+      } else {
+        toast.error(`⚠️ Login failed: ${error.message}`);
       }
-      else if (error.code === "auth/invalid-credential") {
-        toast.error('⚠️ Invalid credentials, please try again.')
-        newErr.notify ="⚠️ Invalid credentials, please try again.";
-      }
-       else {
-        toast.error("⚠️ Login failed. Please try again.")
-        newErr.notify ="⚠️ Login failed. Please try again.";
-      }
-      console.error("Firebase login error:", error.code, error.message);
-    // alert(error.message);
-    setErrData(newErr);
-
+      console.error("Login error:", error);
+      setErrData({ notify: error.message });
     }
     finally {
       setLoading(false); // stop loading
@@ -69,13 +57,6 @@ function Login() {
   };
   const handleSubmit =  () => {
     handleValidation()
-    if (!errData) {
-      // navigate("/", { replace: true });
-      return
-    }
-    localStorage.setItem("oldUser",formData.email)
-    console.log(errData)
-
   };
 
   return (
@@ -117,8 +98,8 @@ function Login() {
         <p style={{ color: "grey" }}>
           No account yet? <Link to={"/register"}>Sign Up</Link>
         </p>
-        <input className="submit-btn"           disabled={loading}
- type="button" onClick={handleSubmit} value={loading ? "Logging in..." : "Login"} />
+        <input className="submit-btn" disabled={loading}
+         type="submit" value={loading ? "Logging in..." : "Login"} />
       </form>
     </div>
   );

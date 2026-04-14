@@ -1,14 +1,12 @@
 import { useState } from "react";
-import "./register.css"
+import "./Form.css"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { auth, googleProvider } from "../../config/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-  fetchSignInMethodsForEmail, 
-  signInWithPopup} from "firebase/auth";
-import { async } from "@firebase/util";
+import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../config/supabase";
 function Register() {
-  const navigate = useNavigate()
+  const { signup } = useAuth();
+  const navigate = useNavigate();
     // const userCart = [];
   const [formData, setFormData] = useState({
     email: "",
@@ -21,70 +19,51 @@ function Register() {
     const value = e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
-  const handleValidation =async()=>{
+  const handleValidation = async () => {
     const newErr = {};
+    if (!formData.email || !formData.password || !formData.phone) {
+      setErrData({ notify: "⚠️ All fields are required." });
+      return;
+    }
 
     try {
-      // check if email already exists
-      const providers = await fetchSignInMethodsForEmail(auth, formData.email);
-  
-      if (providers.length > 0) {
-        const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
-        console.log("Logged in:", userCredential.user);
-        alert("Welcome back! You are logged in.");
-        navigate("/login", { replace: true });
-      } else {
-        // new user -> create account
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password, formData.phoneNumber);
-        console.log("New account created:", userCredential.user);
-        navigate("/login", { replace: true });
-      }
-    } catch (error) {
-
-      if (error.code === "auth/email-already-in-use") {
-        newErr.notify="⚠️ This email is already registered. Please log in instead.";
-      } else if (error.code === "auth/invalid-email") {
-        newErr.notify ="⚠️ Please enter a valid email address.";
-      } else if (error.code === "auth/missing-password") {
-        newErr.notify ="⚠️ Please input a password.";
-      } 
-      else if (error.code === "auth/weak-password") {
-        newErr.notify ="⚠️ Password must be at least 6 characters long.";
-      } 
-      else {
-        newErr.notify ="⚠️ Something went wrong. Please try again.";
-      }
+      // Pass phone to Supabase metadata
+      await signup(formData.email, formData.password, {
+        data: { phone: formData.phone }
+      });
       
-      console.error(error);
-      setErrData(newErr)
-      // alert(error.message);
-    } 
-  }
-  const signIn = (e)=>{
+      alert("Registration successful! Please check your email for confirmation or log in.");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Signup error:", error);
+      if (error.message && error.message.includes("already")) {
+        newErr.notify = "⚠️ This email is already registered.";
+      } else {
+        newErr.notify = `⚠️ Signup failed: ${error.message}`;
+      }
+      setErrData(newErr);
+    }
+  };
+  const handleSubmit = (e)=>{
     e.preventDefault()
-        handleValidation();
-    if (!errData) {
-      console.log('log in successful');
-
-        }
-        localStorage.setItem("oldUser",formData.email)
-     }
+    handleValidation();
+  }
 
 // signing in with google
 const signInWithGoogle = async() =>{
-try {
-  await signInWithPopup(auth,googleProvider)
-} catch(err){
-  console.error(err)
-}
+  try {
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
+  } catch(err){
+    console.error(err);
+  }
 }
 
 // sign out function
 const logOut = async() =>{
   try {
-    await signOut(auth)
+    await supabase.auth.signOut();
   } catch(err){
-    console.error(err)
+    console.error(err);
   }
 }
   return (
@@ -96,8 +75,7 @@ const logOut = async() =>{
       <form
         action=""
         onSubmit={(event) => {
-          event.preventDefault();
-          signIn();
+          handleSubmit(event);
         }}
       >
         <h2 style={({ color: "navy", marginBottom: 30 })}>Sign up</h2>
@@ -122,9 +100,9 @@ const logOut = async() =>{
         />
         {/* {errData.password && <p style={{ color: "red" }}>{errData.password}</p>} */}
         <input
-          type="number"
-          name="num"
-          value={formData.phoneNumber}
+          type="tel"
+          name="phone"
+          value={formData.phone}
           placeholder="phone number"
           onChange={handleChange}
           required
@@ -133,7 +111,7 @@ const logOut = async() =>{
         <p style={{ color: "grey" }}>
           Already have an account? <Link to={"/login"}>Sign in</Link>
         </p>
-        <input className="submit-btn" type="submit" onClick={signIn} value={"Sign up"} />
+        <input className="submit-btn" type="submit" value={"Sign up"} />
       </form>
 {/* 
       <button className='google' onClick={signInWithGoogle}>
