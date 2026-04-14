@@ -13,7 +13,6 @@ function EventDetails() {
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 FETCH SINGLE EVENT FROM SUPABASE
   useEffect(() => {
     if (!id) return;
 
@@ -59,7 +58,6 @@ function EventDetails() {
       });
   };
 
-  // ✅ RSVP (ADD USER)
   const rsvp = async () => {
     if (!user) {
       navigate("/login");
@@ -68,7 +66,6 @@ function EventDetails() {
 
     const currentGuests = eventData.guest || [];
 
-    // prevent duplicate RSVP
     if (currentGuests.includes(user.email)) return;
 
     const updatedGuests = [...currentGuests, user.email];
@@ -85,7 +82,6 @@ function EventDetails() {
     }
   };
 
-  // ❌ CANCEL RSVP
   const cancelRsvp = async () => {
     if (!user) return;
 
@@ -105,7 +101,6 @@ function EventDetails() {
     }
   };
 
-  // ⏳ LOADING
   if (loading) {
     return (
       <div className="spinner-container">
@@ -114,7 +109,6 @@ function EventDetails() {
     );
   }
 
-  // ❌ NOT FOUND
   if (!eventData) {
     return (
       <div className="container">
@@ -133,7 +127,6 @@ function EventDetails() {
 
       <div className="details-card">
 
-        {/* 🖼 IMAGE */}
         {eventData.image_url ? (
           <div className="details-hero">
             <img src={eventData.image_url} alt={eventData.event_title} />
@@ -145,7 +138,6 @@ function EventDetails() {
           </div>
         )}
 
-        {/* HEADER */}
         <div className="details-header">
           <div className="category-tag">Social Event</div>
           <h1 className="event-title">{eventData.event_title}</h1>
@@ -165,7 +157,6 @@ function EventDetails() {
           </div>
         </div>
 
-        {/* MAIN */}
         <div className="details-main">
 
           <section className="info-section">
@@ -207,7 +198,6 @@ function EventDetails() {
 
         </div>
 
-        {/* FOOTER */}
         <div className="details-footer">
 
           {eventData.guest?.includes(user?.email) ? (

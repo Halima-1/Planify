@@ -130,7 +130,6 @@ function EventForm({ initialData, onSubmit, onCancel, submitLabel = "Publish Eve
     e.preventDefault();
 
     if (validateStep(3)) {
-      // 🚀 pass cleaned file
       onSubmit(formData, imageFile);
     }
   };
