@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../config/supabase";
 function Register() {
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   // const userCart = [];
   const [formData, setFormData] = useState({
@@ -14,6 +14,7 @@ function Register() {
     password: ""
   });
   const [errData, setErrData] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -49,14 +50,17 @@ function Register() {
     handleValidation();
   }
 
-  // signing in with google
-  const signInWithGoogle = async () => {
+  const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      await supabase.auth.signInWithOAuth({ provider: 'google' });
-    } catch (err) {
-      console.error(err);
+      await loginWithGoogle();
+      // Supabase OAuth redirects the page by default
+    } catch (error) {
+      setErrData({ notify: `⚠️ Google Login failed: ${error.message}` });
+      console.error("Google Login error:", error);
+      setLoading(false);
     }
-  }
+  };
 
   // sign out function
   const logOut = async () => {
@@ -113,13 +117,30 @@ function Register() {
         <p style={{ color: "grey" }}>
           Already have an account? <Link to={"/login"}>Sign in</Link>
         </p>
-        <input className="submit-btn" type="submit" value={"Sign up"} />
+        <input className="submit-btn" disabled={loading}
+          type="submit" value={loading ? "Registering..." : "Sign up"} />
+        
+        <div style={{ display: "flex", alignItems: "center", margin: "20px 0" }}>
+          <hr style={{ flex: 1, border: "0.5px solid #ccc" }} />
+          <span style={{ padding: "0 10px", color: "grey", fontSize: "14px" }}>OR</span>
+          <hr style={{ flex: 1, border: "0.5px solid #ccc" }} />
+        </div>
+
+        <button 
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          style={{ 
+            width: "100%", padding: "10px", backgroundColor: "white", 
+            color: "grey", border: "1px solid #ccc", borderRadius: "5px",
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center",
+            gap: "10px", fontWeight: "bold"
+          }}
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: "20px" }} />
+          Sign up with Google
+        </button>
       </form>
-      {/* 
-      <button className='google' onClick={signInWithGoogle}>
-                    <b>Sign up with google</b> <br />
-                    <img src="../../src/assets/google logo.png" alt="google logo" />                   
-                </button> */}
       {/* <button onClick={logOut}>sign out</button> */}
     </div>
   );

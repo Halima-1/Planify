@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 // import { UserContext } from "../App";
 function Login() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -59,6 +59,18 @@ function Login() {
     handleValidation()
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await loginWithGoogle();
+      // Supabase OAuth redirects the page by default, so we won't see a success toast instantly here
+    } catch (error) {
+      toast.error(`⚠️ Google Login failed: ${error.message}`);
+      console.error("Google Login error:", error);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="register-container">
       {/* <p>{user.name}</p>
@@ -101,6 +113,27 @@ function Login() {
         </p>
         <input className="submit-btn" disabled={loading}
           type="submit" value={loading ? "Logging in..." : "Login"} />
+        
+        <div style={{ display: "flex", alignItems: "center", margin: "20px 0" }}>
+          <hr style={{ flex: 1, border: "0.5px solid #ccc" }} />
+          <span style={{ padding: "0 10px", color: "grey", fontSize: "14px" }}>OR</span>
+          <hr style={{ flex: 1, border: "0.5px solid #ccc" }} />
+        </div>
+
+        <button 
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          style={{ 
+            width: "100%", padding: "10px", backgroundColor: "white", 
+            color: "grey", border: "1px solid #ccc", borderRadius: "5px",
+            cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center",
+            gap: "10px", fontWeight: "bold"
+          }}
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: "20px" }} />
+          Sign in with Google
+        </button>
       </form>
     </div>
   );
